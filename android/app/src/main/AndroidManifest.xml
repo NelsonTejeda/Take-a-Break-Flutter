@@ -10,6 +10,9 @@
         android:label="take_a_break"
         android:icon="@mipmap/ic_launcher">
 
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCXuYStQzTcciEEgZ_DCA0F48agk6ar_xY"/>
+
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
