@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "552653839194",
+    "firebase_url": "https://takeabreakflutter.firebaseio.com",
+    "project_id": "takeabreakflutter",
+    "storage_bucket": "takeabreakflutter.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:552653839194:android:75039590ea055d6cf0b163",
+        "android_client_info": {
+          "package_name": "com.softwaretwo.take_a_break"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "552653839194-i2qrmr8r5pq8otq27p56s4aqvuvbj4md.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9s6NszmOISodO2hbxmgWXAKs_Y2KeN7g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "552653839194-i2qrmr8r5pq8otq27p56s4aqvuvbj4md.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
