@@ -2,6 +2,8 @@ import 'package:take_a_break/Authentication_Helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+//Enock was here
+
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
