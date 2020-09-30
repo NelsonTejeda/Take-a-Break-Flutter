@@ -21,7 +21,7 @@ class _MyMapState extends State<MyMap> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Maps Sample App'),
+          title: Text('Maps'),
           backgroundColor: Colors.green[700],
         ),
         body: GoogleMap(

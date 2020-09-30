@@ -1,6 +1,9 @@
 import 'package:take_a_break/Authentication_Helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:take_a_break/googlemaps.dart';
+
 
 //Enock was here
 //Nelson was here as well
@@ -20,6 +23,15 @@ class HomePage extends StatelessWidget {
               },
               child: Text("Sign out"),
             ),
+            RaisedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MyMap()),
+                );
+              },
+              child: Text("google maps"),
+            )
           ],
         ),
       ),
