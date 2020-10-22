@@ -11,7 +11,7 @@ class SignInPage extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          Image.asset('assets/images/logohighrez.png'),
+          Expanded(child: Image.asset('assets/images/logohighrez.png')),
           TextField(
             controller: emailController,
             decoration: InputDecoration(
@@ -63,7 +63,7 @@ class SignInPage extends StatelessWidget {
                 child: Text("Sign Up"),
           ))
         ],
-      ),
+      ), backgroundColor: Colors.white
     );
   }
 }
