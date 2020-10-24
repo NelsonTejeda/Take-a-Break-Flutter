@@ -1,8 +1,11 @@
 import 'package:take_a_break/Authentication_Helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:take_a_break/home_page.dart';
 
 class SignInPage extends StatelessWidget {
+  //make a static string
+  static String emailName;
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
@@ -45,6 +48,12 @@ class SignInPage extends StatelessWidget {
                   email: emailController.text.trim(),
                   password: passwordController.text.trim(),
                   );
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => HomePage(emailName: emailController.text.trim()),
+                      )
+                  );
                 },
                 child: Text("Sign in"),
           )),
@@ -58,6 +67,12 @@ class SignInPage extends StatelessWidget {
                   context.read<AuthenticationHelper>().signUp(
                   email: emailController.text.trim(),
                   password: passwordController.text.trim(),
+                  );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => HomePage(emailName: emailController.text.trim())
+                    )
                   );
                 },
                 child: Text("Sign Up"),

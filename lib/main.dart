@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
       title: "Take a Break",
       theme: ThemeData(
-          primarySwatch: Colors.green,
+          primarySwatch: Colors.brown,
           visualDensity: VisualDensity.adaptivePlatformDensity
       ),
       home: AuthenticationWrapper(),
