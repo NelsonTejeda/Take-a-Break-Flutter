@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:take_a_break/Authentication_Helper.dart';
 import 'package:take_a_break/home_page.dart';
 import 'package:take_a_break/sign_in_page.dart';
+import 'package:take_a_break/globals.dart';
 
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,7 +43,7 @@ class AuthenticationWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User>();
     if(firebaseUser!= null){
-      return HomePage();
+      return Pages();
     }
     return SignInPage();
   }
