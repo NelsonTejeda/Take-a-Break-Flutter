@@ -19,7 +19,11 @@ class _HomeTabState extends State<HomeTab> {
 
   @override
   Widget build(BuildContext context) {
+
     databaseReference.child("${Globals.uid}/username").once().then((DataSnapshot data){
+      if(mounted && username != null){
+        return;
+      }
       setState(() {
         username = data.value;
       });
@@ -27,6 +31,7 @@ class _HomeTabState extends State<HomeTab> {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('MMMM dd yyyy').format(now);
     final height = MediaQuery.of(context).size.height;
+
     return Scaffold(
       body: Stack(
         children: <Widget>[

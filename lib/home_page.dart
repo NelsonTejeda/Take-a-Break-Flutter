@@ -2,6 +2,7 @@ import 'package:take_a_break/Authentication_Helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:take_a_break/home_tab.dart';
+import 'package:take_a_break/leader_tab.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:take_a_break/fitnessAPI.dart';
 import 'package:intl/intl.dart';
@@ -17,9 +18,10 @@ class Pages extends StatefulWidget{
 }
 
 class HomePage extends State<Pages> {
+  String clean = "";
   int _currentIndex = 1;
   final tabs = [
-    Center(child: Text("Leaderboards")),
+    LeaderBoard(),
     HomeTab(),
     Center(child: Text("Profile")),
   ];
@@ -63,6 +65,7 @@ class HomePage extends State<Pages> {
           )
         ],
         onTap: (int index){
+          if(!mounted) return;
           setState(() {
             _currentIndex = index;
           });

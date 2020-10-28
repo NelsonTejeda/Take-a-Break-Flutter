@@ -92,7 +92,8 @@ class SignInPage extends StatelessWidget {
                   databaseReference.child(Globals.uid).set({
                     'username': usernameController.text.trim(),
                     'email': emailController.text.trim(),
-                    'password': passwordController.text.trim()
+                    'password': passwordController.text.trim(),
+                    'score' : "0"
                   });
                 },
                 child: Text("Sign Up"),

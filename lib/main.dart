@@ -43,6 +43,8 @@ class AuthenticationWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User>();
     if(firebaseUser!= null){
+      print("this is the uid: ${firebaseUser.uid}");
+      Globals.uid = firebaseUser.uid;
       return Pages();
     }
     return SignInPage();
