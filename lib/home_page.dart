@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:take_a_break/home_tab.dart';
 import 'package:take_a_break/leader_tab.dart';
+import 'package:take_a_break/profile_tab.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:take_a_break/fitnessAPI.dart';
 import 'package:intl/intl.dart';
@@ -23,7 +24,7 @@ class HomePage extends State<Pages> {
   final tabs = [
     LeaderBoard(),
     HomeTab(),
-    Center(child: Text("Profile")),
+    ProfileTab(),
   ];
   @override
   Widget build(BuildContext context) {
