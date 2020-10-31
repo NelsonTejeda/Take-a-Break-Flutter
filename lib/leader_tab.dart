@@ -10,7 +10,7 @@ class _LeaderBoardState extends State<LeaderBoard> {
   final databaseReference = FirebaseDatabase.instance.reference();
   String username;
   Map<dynamic, dynamic> myMap;
-  var list = ["1","2"];
+  //var list = ["1","2"];
   Widget myListOfUsers;
 
   Widget getTextWidgets(Map<dynamic, dynamic> users)

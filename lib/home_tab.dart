@@ -58,7 +58,7 @@ class _HomeTabState extends State<HomeTab> {
                             ),
                           ),
                           subtitle: Text(
-                            "Hello, ${username}!",
+                            "Hello, ${Globals.username}!",
                             style: TextStyle(
                                 fontWeight: FontWeight.w800,
                                 fontSize: 20,

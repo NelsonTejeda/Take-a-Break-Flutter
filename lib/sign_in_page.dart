@@ -65,8 +65,12 @@ class SignInPage extends StatelessWidget {
                   email: emailController.text.trim(),
                   password: passwordController.text.trim(),
                   );
+                  databaseReference.child("${Globals.uid}/username").once().then((DataSnapshot data) {
+                    Globals.username = data.value;
+                  });
                   print(Globals.uid);
                   if(usernameController.text.trim().length > 0){
+                    Globals.username = usernameController.text.trim();
                     databaseReference.child(Globals.uid).update({
                       'username': usernameController.text.trim(),
                       'email': emailController.text.trim(),
@@ -89,11 +93,15 @@ class SignInPage extends StatelessWidget {
                   );
                   print(Globals.uid);
                   print(Globals.uid);
+                  Globals.username = usernameController.text.trim();
                   databaseReference.child(Globals.uid).set({
                     'username': usernameController.text.trim(),
                     'email': emailController.text.trim(),
                     'password': passwordController.text.trim(),
-                    'score' : "0"
+                    'score' : "0",
+                    'friends' : {
+                      'counter' : "0"
+                    }
                   });
                 },
                 child: Text("Sign Up"),

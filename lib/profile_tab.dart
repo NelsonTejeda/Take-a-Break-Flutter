@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:take_a_break/globals.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class ProfileTab extends StatefulWidget {
   @override
@@ -6,10 +8,100 @@ class ProfileTab extends StatefulWidget {
 }
 
 class _ProfileTabState extends State<ProfileTab> {
+  final TextEditingController emailController = TextEditingController();
+  final databaseReference = FirebaseDatabase.instance.reference();
+  var userExist = false;
+  var newCounterVal = "";
+  var friendPosistion = "0";
+  Map<dynamic, dynamic> userFriends = Map();
+  Map<dynamic,dynamic> friendListInfo =  Map();
+  List<Widget> listOfFriendWidget;
+
+  List<Widget> getFriendWidgets(Map<dynamic, dynamic> users){
+    List<Widget> list = new List<Widget>();
+    users.forEach((key, value) {
+      print(value);
+      list.add(
+          new Row(
+            children: <Widget>[
+              SizedBox(width: 130,),
+              CircleAvatar(
+                backgroundImage: null,
+                radius: 15,
+              ),
+              SizedBox(width: 10,),
+              Text(value)
+            ],
+          ),
+      );
+      list.add(SizedBox(height: 10,));
+    });
+    return list;
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    //userFriends = Map();
+    //friendListInfo = Map();
+
+    //listOfFriendWidget = new List<Widget>();
+
+    super.initState();
+  }
+
+
   @override
   Widget build(BuildContext context) {
+    List<Widget> dummy = new List<Widget>();
+
+    databaseReference.child("${Globals.uid}/friends").once().then((DataSnapshot data){
+      userFriends = data.value;
+      print("LOOK AT MEEEE!$userFriends");
+      print("LOOK AT ME 2 $userFriends");
+      databaseReference.child("/").once().then((DataSnapshot dataroot){
+        userFriends.forEach((key, value) {
+          if(dataroot.value[key] != null){
+            friendListInfo[key] = dataroot.value[key]["username"];
+            //friendPosistion = "${int.parse(friendPosistion) + 1}";
+            print("I AM THE FRIEND LIST INFO $friendListInfo");
+          }
+          if(mounted){
+            setState(() {
+              listOfFriendWidget = getFriendWidgets(friendListInfo);
+              print("the current list is: $listOfFriendWidget");
+            });
+          }
+        });
+
+      });
+      //listOfFriendWidget = getFriendWidgets(friendListInfo);
+    });
+
+    // userFriends.forEach((key, value) {
+    //   databaseReference.child("/").once().then((DataSnapshot data){
+    //     if(data.value[key] != null && mounted){
+    //       print(data.value[key]);
+    //       print(data.value[key]["username"]);
+    //     }
+    //   });
+    // });
+
+    // databaseReference.child("/").once().then((DataSnapshot dataroot){
+    //   userFriends.forEach((key, value) {
+    //     if(dataroot.value[key] != null){
+    //       friendListInfo[key] = dataroot.value[key]["username"];
+    //       //friendPosistion = "${int.parse(friendPosistion) + 1}";
+    //       print(friendListInfo);
+    //       listOfFriendWidget = getFriendWidgets(friendListInfo);
+    //     }
+    //   });
+    // });
+
+
     return Scaffold(
-      body: Column(
+      resizeToAvoidBottomPadding: false,
+      body: SingleChildScrollView(child: Column(
         children: <Widget>[
           Container(
             decoration: BoxDecoration(
@@ -36,7 +128,7 @@ class _ProfileTabState extends State<ProfileTab> {
                       ),
                       SizedBox(height: 20.0,),
                       Text(
-                        "name here",
+                        Globals.username,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20.0
@@ -66,18 +158,46 @@ class _ProfileTabState extends State<ProfileTab> {
                                 context: context,
                                 barrierDismissible: true,
                                 builder: (BuildContext context){
-                                  return AlertDialog(
+                                   return AlertDialog(
                                     title: Text("Add a Friend"),
                                     content: new Column(
                                       mainAxisSize: MainAxisSize.min,
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: <Widget>[
-                                        Text("Some Text")
+                                        TextField(
+                                          controller: emailController,
+                                          decoration: InputDecoration(
+                                            hintText: "email of friend",
+                                            contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
+                                          ),
+                                        )
                                       ],
                                     ),
                                     actions: <Widget>[
                                       new FlatButton(
                                         onPressed: (){
+                                          if(emailController.text.trim().length > 0){
+                                            databaseReference.child("/").once().then((DataSnapshot data){
+                                              data.value.forEach((key, value){
+                                                if(value["email"] == emailController.text.trim()){
+                                                  newCounterVal = value["friends"]["counter"];
+                                                  newCounterVal = "${int.parse(newCounterVal) + 1}";
+                                                  userExist = true;
+                                                  databaseReference.child("${Globals.uid}/friends").update({
+                                                    'counter' : newCounterVal,
+                                                    key : emailController.text.trim()
+                                                  });
+                                                }
+                                              });
+                                              if(!userExist){
+                                                print("user does not exist");
+                                              }
+                                              else{
+                                                userExist = false;
+                                              }
+                                            });
+                                          }
                                           Navigator.of(context).pop();
                                         },
                                         textColor: Theme.of(context).primaryColor,
@@ -164,19 +284,15 @@ class _ProfileTabState extends State<ProfileTab> {
             height: 200,
             child: Center(
               child: ListWheelScrollView(
-                children: <Widget>[
-                  Text("Friend 1"),
-                  Text("Friend 2"),
-                  Text("Friend 2"),
-                  Text("Friend 4"),
-                  Text("Friend 5")
-                ],
+                children: listOfFriendWidget ,
                 itemExtent: 42,
+                useMagnifier: true,
+                magnification: 1.5,
               ),
             )
           )
         ],
-      ),
+      )),
     );
   }
 }
