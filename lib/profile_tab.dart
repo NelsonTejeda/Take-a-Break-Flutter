@@ -15,16 +15,18 @@ class _ProfileTabState extends State<ProfileTab> {
   var friendPosistion = "0";
   Map<dynamic, dynamic> userFriends = Map();
   Map<dynamic,dynamic> friendListInfo =  Map();
-  List<Widget> listOfFriendWidget;
+  List<Widget> listTemp;
+  Future<List<Widget>>listOfFriendWidget;
 
   List<Widget> getFriendWidgets(Map<dynamic, dynamic> users){
     List<Widget> list = new List<Widget>();
+    list.add(Text(""));
     users.forEach((key, value) {
       print(value);
       list.add(
           new Row(
             children: <Widget>[
-              SizedBox(width: 130,),
+              SizedBox(width: 150,),
               CircleAvatar(
                 backgroundImage: null,
                 radius: 15,
@@ -34,70 +36,35 @@ class _ProfileTabState extends State<ProfileTab> {
             ],
           ),
       );
-      list.add(SizedBox(height: 10,));
     });
     return list;
   }
 
+  Future<List<Widget>> getFriends() async{
+    List<Widget> temp;
+    await databaseReference.child("${Globals.uid}/friends").once().then((DataSnapshot data) async{
+      userFriends = data.value;
+      await databaseReference.child("/").once().then((DataSnapshot dataroot) async{
+        userFriends.forEach((key, value) {
+          if(dataroot.value[key] != null){
+            friendListInfo[key] = dataroot.value[key]["username"];
+          }
+        });
+        temp = getFriendWidgets(friendListInfo);
+      });
+    });
+    return temp;
+  }
+
   @override
   void initState() {
-    // TODO: implement initState
-    //userFriends = Map();
-    //friendListInfo = Map();
-
-    //listOfFriendWidget = new List<Widget>();
-
     super.initState();
+    listOfFriendWidget = getFriends();
   }
 
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> dummy = new List<Widget>();
-
-    databaseReference.child("${Globals.uid}/friends").once().then((DataSnapshot data){
-      userFriends = data.value;
-      print("LOOK AT MEEEE!$userFriends");
-      print("LOOK AT ME 2 $userFriends");
-      databaseReference.child("/").once().then((DataSnapshot dataroot){
-        userFriends.forEach((key, value) {
-          if(dataroot.value[key] != null){
-            friendListInfo[key] = dataroot.value[key]["username"];
-            //friendPosistion = "${int.parse(friendPosistion) + 1}";
-            print("I AM THE FRIEND LIST INFO $friendListInfo");
-          }
-          if(mounted){
-            setState(() {
-              listOfFriendWidget = getFriendWidgets(friendListInfo);
-              print("the current list is: $listOfFriendWidget");
-            });
-          }
-        });
-
-      });
-      //listOfFriendWidget = getFriendWidgets(friendListInfo);
-    });
-
-    // userFriends.forEach((key, value) {
-    //   databaseReference.child("/").once().then((DataSnapshot data){
-    //     if(data.value[key] != null && mounted){
-    //       print(data.value[key]);
-    //       print(data.value[key]["username"]);
-    //     }
-    //   });
-    // });
-
-    // databaseReference.child("/").once().then((DataSnapshot dataroot){
-    //   userFriends.forEach((key, value) {
-    //     if(dataroot.value[key] != null){
-    //       friendListInfo[key] = dataroot.value[key]["username"];
-    //       //friendPosistion = "${int.parse(friendPosistion) + 1}";
-    //       print(friendListInfo);
-    //       listOfFriendWidget = getFriendWidgets(friendListInfo);
-    //     }
-    //   });
-    // });
-
 
     return Scaffold(
       resizeToAvoidBottomPadding: false,
@@ -283,11 +250,25 @@ class _ProfileTabState extends State<ProfileTab> {
           Container(
             height: 200,
             child: Center(
-              child: ListWheelScrollView(
-                children: listOfFriendWidget ,
-                itemExtent: 42,
-                useMagnifier: true,
-                magnification: 1.5,
+              child: FutureBuilder<List<Widget>>(
+                future: listOfFriendWidget,
+                builder: (context, snapshot){
+                  return snapshot.hasData ?
+                      ListWheelScrollView(
+                        children: snapshot.data,
+                        itemExtent: 50,
+                        useMagnifier: true,
+                        magnification: 1.5,
+                      ) :
+                  ListWheelScrollView(
+                    children: <Widget>[
+                      CircularProgressIndicator(),
+                    ],
+                    itemExtent: 42,
+                    useMagnifier: true,
+                    magnification: 1.5,
+                  );
+                },
               ),
             )
           )
