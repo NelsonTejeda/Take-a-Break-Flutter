@@ -1,6 +1,12 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:take_a_break/globals.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+//import 'package:flutter/widgets.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ProfileTab extends StatefulWidget {
   @override
@@ -17,6 +23,7 @@ class _ProfileTabState extends State<ProfileTab> {
   Map<dynamic,dynamic> friendListInfo =  Map();
   List<Widget> listTemp;
   Future<List<Widget>>listOfFriendWidget;
+  String imageUrl;
 
   List<Widget> getFriendWidgets(Map<dynamic, dynamic> users){
     List<Widget> list = new List<Widget>();
@@ -56,6 +63,7 @@ class _ProfileTabState extends State<ProfileTab> {
     return temp;
   }
 
+
   @override
   void initState() {
     super.initState();
@@ -90,7 +98,7 @@ class _ProfileTabState extends State<ProfileTab> {
                   mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       CircleAvatar(
-                        backgroundImage: null,
+                        backgroundImage: Globals.profileImgUrl!=null?NetworkImage(Globals.profileImgUrl):null,
                         radius: 50.0,
                       ),
                       SizedBox(height: 20.0,),
@@ -110,9 +118,7 @@ class _ProfileTabState extends State<ProfileTab> {
                             iconSize: 30.0,
                             tooltip: "Change/Set Profile Photo",
                             color: Color(0xFFE89696),
-                            onPressed: (){
-                              print("icon camera");
-                            },
+                            onPressed: () => uploadImage(),
                           ),
                           SizedBox(width: 5,),
                           IconButton(
@@ -161,6 +167,9 @@ class _ProfileTabState extends State<ProfileTab> {
                                                 print("user does not exist");
                                               }
                                               else{
+                                                setState(() {
+                                                  listOfFriendWidget = getFriends();
+                                                });
                                                 userExist = false;
                                               }
                                             });
@@ -276,4 +285,36 @@ class _ProfileTabState extends State<ProfileTab> {
       )),
     );
   }
+
+  uploadImage() async{
+    final _storage = FirebaseStorage.instance;
+    final _picker = ImagePicker();
+
+    PickedFile image;
+
+    await Permission.photos.request();
+
+    var permissionStatus = await Permission.photos.status;
+
+    if(permissionStatus.isGranted){
+      image = await _picker.getImage(source: ImageSource.gallery);
+      var file = File(image.path);
+      if(image != null){
+        var snapshot =  await _storage.ref().child("${Globals.uid}/profilePhoto").putFile(file).onComplete;
+        var downloadUrl = await snapshot.ref.getDownloadURL();
+        setState(() {
+          Globals.profileImgUrl = downloadUrl;
+        });
+      }
+      else{
+        print("no photo was given");
+      }
+    }
+    else{
+      print("user most likely declined");
+    }
+
+  }
+
+
 }
