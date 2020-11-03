@@ -7,6 +7,7 @@ import 'package:take_a_break/home_page.dart';
 import 'package:take_a_break/sign_in_page.dart';
 import 'package:take_a_break/globals.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,9 +53,17 @@ class AuthenticationWrapper extends StatelessWidget {
       databaseReference.child("${Globals.uid}/username").once().then((DataSnapshot data) {
         Globals.username = data.value;
       });
+      final _storage = FirebaseStorage.instance;
+      try{
+        _storage.ref().child("${Globals.uid}/profilePhoto").getDownloadURL().then((value) => Globals.profileImgUrl = value);
+      }
+      catch(e){
+        Globals.profileImgUrl = "https://www.cornwallbusinessawards.co.uk/wp-content/uploads/2017/11/dummy450x450.jpg";
+      }
       return Pages();
     }
     return SignInPage();
   }
 }
+
 

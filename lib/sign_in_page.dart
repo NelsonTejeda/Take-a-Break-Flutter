@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:take_a_break/globals.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:take_a_break/home_page.dart';
 
@@ -77,6 +78,16 @@ class SignInPage extends StatelessWidget {
                       'password': passwordController.text.trim()
                     });
                   }
+                  final _storage = FirebaseStorage.instance;
+                  String profileURL;
+                  try{
+                    profileURL = await _storage.ref().child("${Globals.uid}/profilePhoto").getDownloadURL();
+                    Globals.profileImgUrl = profileURL;
+                  }
+                  catch(e){
+                    Globals.profileImgUrl = "https://www.cornwallbusinessawards.co.uk/wp-content/uploads/2017/11/dummy450x450.jpg";
+                  }
+
                 },
                 child: Text("Sign in"),
           )),
@@ -93,6 +104,7 @@ class SignInPage extends StatelessWidget {
                   );
                   print(Globals.uid);
                   print(Globals.uid);
+                  Globals.profileImgUrl = "https://www.cornwallbusinessawards.co.uk/wp-content/uploads/2017/11/dummy450x450.jpg";
                   Globals.username = usernameController.text.trim();
                   databaseReference.child(Globals.uid).set({
                     'username': usernameController.text.trim(),

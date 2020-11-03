@@ -25,6 +25,20 @@ class _ProfileTabState extends State<ProfileTab> {
   Future<List<Widget>>listOfFriendWidget;
   String imageUrl;
 
+
+  Future<String> _getImage(String image) async {
+    final _storage = FirebaseStorage.instance;
+    String profileURL;
+    try{
+      profileURL = await _storage.ref().child("${image}/profilePhoto").getDownloadURL();
+      print("URL LINKS TO PROFILE PIC: $profileURL");
+      return profileURL;
+    }
+    catch(e){
+      return "https://www.cornwallbusinessawards.co.uk/wp-content/uploads/2017/11/dummy450x450.jpg";
+    }
+  }
+
   List<Widget> getFriendWidgets(Map<dynamic, dynamic> users){
     List<Widget> list = new List<Widget>();
     list.add(Text(""));
@@ -34,9 +48,13 @@ class _ProfileTabState extends State<ProfileTab> {
           new Row(
             children: <Widget>[
               SizedBox(width: 150,),
-              CircleAvatar(
-                backgroundImage: null,
-                radius: 15,
+              Container(
+                child: FutureBuilder<String>(
+                  future: _getImage(key),
+                  builder: (context, snapshot){
+                    return snapshot.hasData ? CircleAvatar(backgroundImage: NetworkImage(snapshot.data), radius: 25.0) : CircularProgressIndicator();
+                  },
+                ),
               ),
               SizedBox(width: 10,),
               Text(value)
@@ -265,7 +283,7 @@ class _ProfileTabState extends State<ProfileTab> {
                   return snapshot.hasData ?
                       ListWheelScrollView(
                         children: snapshot.data,
-                        itemExtent: 50,
+                        itemExtent: 70,
                         useMagnifier: true,
                         magnification: 1.5,
                       ) :
