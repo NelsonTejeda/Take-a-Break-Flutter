@@ -26,7 +26,7 @@ class _HomeTabState extends State<HomeTab> {
       child: Card(
         child: Wrap(
           children: <Widget>[
-            Image.network(img),
+            Image.network(img,height: 100,width: double.infinity,),
             ListTile(
               title: Text(title),
               subtitle: Text(description),
@@ -38,16 +38,18 @@ class _HomeTabState extends State<HomeTab> {
   }
 
   apiCallTest() async {
-    var response = await Dio().get('https://newsapi.org/v2/top-headlines?country=us&apiKey=5f3442d6b21842528f3eb23490cf9e3d');
-    return response.data["articles"][0]["title"];
+    var response = await Dio().get('https://api.spoonacular.com/food/search?query=apple&number=2&apiKey=94b75a6f34c04e789c7ea46f2e23bdc9');
+    return response.data["searchResults"][0]["results"][0]["image"];
   }
 
   Future<List<Widget>> makeNewsScroll() async{
     List<Widget> list = new List<Widget>();
-    var response = await Dio().get('https://newsapi.org/v2/top-headlines?country=us&apiKey=5f3442d6b21842528f3eb23490cf9e3d');
+    var response = await Dio().get('https://api.spoonacular.com/food/menuItems/search?query=protein&number=10&apiKey=94b75a6f34c04e789c7ea46f2e23bdc9');
     for(var i = 0; i < 10; i++){
-      list.add(newArticle(response.data["articles"][i]["title"], response.data["articles"][i]["urlToImage"], response.data["articles"][i]["description"]));
+      print("times");
+      list.add(newArticle(response.data["menuItems"][i]["title"], response.data["menuItems"][i]["image"], response.data["menuItems"][i]["title"]));
     }
+    print("finished");
     return list;
   }
 
@@ -122,7 +124,7 @@ class _HomeTabState extends State<HomeTab> {
                 children: <Widget>[
                   Container(
                     width: 400,
-                    height: 300,
+                    height: 200,
                     child: FutureBuilder<List<Widget>>(
                       future: news,
                       builder: (context, snapshot){

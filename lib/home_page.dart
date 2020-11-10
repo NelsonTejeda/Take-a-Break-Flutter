@@ -31,48 +31,50 @@ class HomePage extends State<Pages> {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('MMMM dd yyyy').format(now);
     final height = MediaQuery.of(context).size.height;
-    return Scaffold(
-      backgroundColor: const Color(0xFFF2F3F4),
-      bottomNavigationBar: BottomNavigationBar(
-        iconSize: 30,
-        currentIndex: _currentIndex,
-        selectedIconTheme: IconThemeData(
-          color: const Color(0xFFE89696)
-        ),
-        unselectedIconTheme: IconThemeData(
-          color: const Color(0xFFFFD37A)
-        ),
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.people_outline),
-            title: Text(
-              "leaderboards",
-              style: TextStyle(color: Color(0xFFE89696)),
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF2F3F4),
+        bottomNavigationBar: BottomNavigationBar(
+          iconSize: 30,
+          currentIndex: _currentIndex,
+          selectedIconTheme: IconThemeData(
+            color: const Color(0xFFE89696)
+          ),
+          unselectedIconTheme: IconThemeData(
+            color: const Color(0xFFFFD37A)
+          ),
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.people_outline),
+              title: Text(
+                "leaderboards",
+                style: TextStyle(color: Color(0xFFE89696)),
+              )
+            ),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                title: Text(
+                  "Home",
+                  style: TextStyle(color: Color(0xFFE89696)),
+                )
+            ),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.person),
+                title: Text(
+                  "Profile",
+                  style: TextStyle(color: Color(0xFFE89696)),
+                )
             )
-          ),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              title: Text(
-                "Home",
-                style: TextStyle(color: Color(0xFFE89696)),
-              )
-          ),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              title: Text(
-                "Profile",
-                style: TextStyle(color: Color(0xFFE89696)),
-              )
-          )
-        ],
-        onTap: (int index){
-          if(!mounted) return;
-          setState(() {
-            _currentIndex = index;
-          });
-        },
+          ],
+          onTap: (int index){
+            if(!mounted) return;
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+        ),
+        body: tabs[_currentIndex],
       ),
-      body: tabs[_currentIndex],
     );
   }
 }
