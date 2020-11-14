@@ -38,6 +38,8 @@ dependencies:
   firebase_storage: ^4.0.1
   permission_handler: ^5.0.1+1
   dio: ^3.0.10
+  youtube_player_flutter: ^7.0.0+7
+  cloud_firestore: ^0.14.3
 
 dev_dependencies:
   flutter_test:

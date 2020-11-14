@@ -7,6 +7,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:take_a_break/Authentication_Helper.dart';
 import 'package:take_a_break/globals.dart';
 import 'package:dio/dio.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HomeTab extends StatefulWidget {
   @override
@@ -14,10 +17,35 @@ class HomeTab extends StatefulWidget {
 }
 
 class _HomeTabState extends State<HomeTab> {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  String videoURL = "https://www.youtube.com/watch?v=fUv9gO8t8b4";
+  YoutubePlayerController _controller;
   final databaseReference = FirebaseDatabase.instance.reference();
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   String username;
   Future<List<Widget>> news;
+  Future<List<Widget>> workouts;
+
+  Container newWorkout(String img, String name, String reps, String sets, String time){
+    return Container(
+      width: 200,
+      height: 200,
+      child: Card(
+        child: Wrap(
+          children: <Widget>[
+            Image.network(img,height: 100,width: double.infinity,),
+            ListTile(
+              title: Text(name),
+              subtitle: Text("Sets: ${sets}, Reps: ${reps}, Time: ${time}"),
+            ),
+            RaisedButton(
+              child: Text("Learn"),
+            )
+          ],
+        ),
+      ),
+    );
+  }
 
   Container newArticle(String title, String img, String description ){
     return Container(
@@ -39,6 +67,11 @@ class _HomeTabState extends State<HomeTab> {
 
   apiCallTest() async {
     var response = await Dio().get('https://api.spoonacular.com/food/search?query=apple&number=2&apiKey=94b75a6f34c04e789c7ea46f2e23bdc9');
+    await firestore.collection("workouts").get().then((snapshot){
+      snapshot.docs.forEach((element) {
+        print(element.data()["image"]);
+      });
+    });
     return response.data["searchResults"][0]["results"][0]["image"];
   }
 
@@ -52,11 +85,25 @@ class _HomeTabState extends State<HomeTab> {
     print("finished");
     return list;
   }
+  Future<List<Widget>> makeWorkoutScroll() async{
+    List<Widget> list = new List<Widget>();
+    await firestore.collection("workouts").get().then((querySnapshot) {
+      querySnapshot.docs.forEach((element) {
+        list.add(newWorkout(element.data()["image"], element.data()["name"], element.data()["reps"], element.data()["sets"], element.data()["time"]));
+      });
+    });
+    return list;
+  }
+
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _controller = YoutubePlayerController(
+      initialVideoId: YoutubePlayer.convertUrlToId(videoURL)
+    );
+    workouts = makeWorkoutScroll();
     news = makeNewsScroll();
   }
 
@@ -124,6 +171,30 @@ class _HomeTabState extends State<HomeTab> {
                 children: <Widget>[
                   Container(
                     width: 400,
+                    height: 220,
+                    child: FutureBuilder<List<Widget>>(
+                      future: workouts,
+                      builder: (context, snapshot){
+                        return snapshot.hasData ?
+                        ListView(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          children: snapshot.data,
+                        ) :
+                        ListView(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          children: <Widget>[
+                            newArticle("loading", "https://i.pinimg.com/originals/6d/73/4e/6d734e72142078bc2b1994ef80902d9b.gif", "..."),
+                            newArticle("loading", "https://i.pinimg.com/originals/6d/73/4e/6d734e72142078bc2b1994ef80902d9b.gif", "..."),
+                            newArticle("loading", "https://i.pinimg.com/originals/6d/73/4e/6d734e72142078bc2b1994ef80902d9b.gif", "...")
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                  Container(
+                    width: 400,
                     height: 200,
                     child: FutureBuilder<List<Widget>>(
                       future: news,
@@ -158,6 +229,7 @@ class _HomeTabState extends State<HomeTab> {
                     },
                     child: Text("api call test"),
                   ),
+
                 ],
               ),
             ),
