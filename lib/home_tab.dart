@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:take_a_break/Authentication_Helper.dart';
@@ -10,6 +11,8 @@ import 'package:dio/dio.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class HomeTab extends StatefulWidget {
   @override
@@ -25,8 +28,9 @@ class _HomeTabState extends State<HomeTab> {
   String username;
   Future<List<Widget>> news;
   Future<List<Widget>> workouts;
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
-  Container newWorkout(String img, String name, String reps, String sets, String time){
+  Container newWorkout(String img, String name, String reps, String sets, String time, String link){
     return Container(
       width: 200,
       height: 200,
@@ -40,6 +44,34 @@ class _HomeTabState extends State<HomeTab> {
             ),
             RaisedButton(
               child: Text("Learn"),
+              onPressed: (){
+                print(link);
+                setState(() {
+                  _controller = YoutubePlayerController(
+                      initialVideoId: YoutubePlayer.convertUrlToId(link)
+                  );
+                });
+                return showDialog(
+                  context: context,
+                  barrierDismissible: true,
+                  builder: (BuildContext context){
+                    return AlertDialog(
+                      title: Text(name),
+                      content: new Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          YoutubePlayer(
+                            controller: YoutubePlayerController(
+                                initialVideoId: YoutubePlayer.convertUrlToId(link)
+                            )
+                          )
+                        ],
+                      ),
+                    );
+                  }
+                );
+              },
             )
           ],
         ),
@@ -89,7 +121,7 @@ class _HomeTabState extends State<HomeTab> {
     List<Widget> list = new List<Widget>();
     await firestore.collection("workouts").get().then((querySnapshot) {
       querySnapshot.docs.forEach((element) {
-        list.add(newWorkout(element.data()["image"], element.data()["name"], element.data()["reps"], element.data()["sets"], element.data()["time"]));
+        list.add(newWorkout(element.data()["image"], element.data()["name"], element.data()["reps"], element.data()["sets"], element.data()["time"],element.data()["link"]));
       });
     });
     return list;
@@ -105,6 +137,23 @@ class _HomeTabState extends State<HomeTab> {
     );
     workouts = makeWorkoutScroll();
     news = makeNewsScroll();
+    flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
+    var android = new AndroidInitializationSettings(null);
+    var iOS = new IOSInitializationSettings();
+    var initSetttings = new InitializationSettings();
+    flutterLocalNotificationsPlugin.initialize(initSetttings, onSelectNotification: onSelectNotification);
+
+  }
+
+  Future onSelectNotification(String payload) {
+    debugPrint("payload : $payload");
+    showDialog(
+      context: context,
+      builder: (_) => new AlertDialog(
+        title: new Text('Notification'),
+        content: new Text('$payload'),
+      ),
+    );
   }
 
   @override
@@ -154,6 +203,15 @@ class _HomeTabState extends State<HomeTab> {
                                 color: Color(0xFFE89696)
                             ),
                           ),
+                          trailing: IconButton(
+                            icon: Icon(Icons.exit_to_app),
+                            iconSize: 30.0,
+                            tooltip: "add Friends",
+                            color: Color(0xFFE89696),
+                            onPressed: (){
+                              context.read<AuthenticationHelper>().signOut();
+                            },
+                          ),
                         ),
                       ]
                   )
@@ -165,10 +223,18 @@ class _HomeTabState extends State<HomeTab> {
             left: 0,
             right: 0,
             child: Container(
-              color: Color(0xFFF2F3F4),
+              //color: Color(0xFFF2F3F4),
               height: height * 0.7,
-              child: Column(
+              child: ListView(
                 children: <Widget>[
+                  Text(
+                    "Workouts:",
+                    style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 30,
+                        color: Color(0xFFE89696)
+                    ),
+                  ),
                   Container(
                     width: 400,
                     height: 220,
@@ -191,6 +257,14 @@ class _HomeTabState extends State<HomeTab> {
                           ],
                         );
                       },
+                    ),
+                  ),
+                  Text(
+                    "Foods:",
+                    style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 30,
+                        color: Color(0xFFE89696)
                     ),
                   ),
                   Container(
@@ -217,11 +291,199 @@ class _HomeTabState extends State<HomeTab> {
                       },
                     ),
                   ),
-                  RaisedButton(
-                    onPressed: () {
-                      context.read<AuthenticationHelper>().signOut();
-                    },
-                    child: Text("Sign out"),
+                  Text(
+                    "Take A Break!",
+                    style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 30,
+                        color: Color(0xFFE89696)
+                    ),
+                  ),
+                  Container(
+                    width: 200,
+                    height: 50,
+                    child: ListView(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      children: <Widget>[
+                        Container(
+                          width: 200,
+                          height: 50,
+                          child: Card(
+                            child: ListTile(
+                              leading: Icon(
+                                Icons.timer,
+                                color: Color(0xFFE89696),
+                                size: 25,
+                              ),
+                              title: Text('5 Seconds'),
+                              onTap: () async{
+                                //showNotification();
+                                await Future.delayed(Duration(seconds: 5));
+                                FlutterRingtonePlayer.playAlarm();
+                                print("5 seconds have passed");
+                                await Future.delayed(Duration(seconds: 5));
+                                FlutterRingtonePlayer.stop();
+                              },
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: 200,
+                          height: 50,
+                          child: Card(
+                            child: ListTile(
+                              leading: Icon(
+                                Icons.timer,
+                                color: Color(0xFFE89696),
+                                size: 25,
+                              ),
+                              title: Text('10 Seconds'),
+                              onTap: () async{
+                                //showNotification();
+                                await Future.delayed(Duration(seconds: 10));
+                                FlutterRingtonePlayer.playAlarm();
+                                print("10 seconds have passed");
+                                await Future.delayed(Duration(seconds: 5));
+                                FlutterRingtonePlayer.stop();
+                              },
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: 200,
+                          height: 50,
+                          child: Card(
+                            child: ListTile(
+                              leading: Icon(
+                                Icons.timer,
+                                color: Color(0xFFE89696),
+                                size: 25,
+                              ),
+                              title: Text('5 minutes'),
+                              onTap: () async{
+                                //showNotification();
+                                await Future.delayed(Duration(seconds: 5));
+                                FlutterRingtonePlayer.playAlarm();
+                                print("5 seconds have passed");
+                                await Future.delayed(Duration(seconds: 5));
+                                FlutterRingtonePlayer.stop();
+                              },
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: 200,
+                          height: 50,
+                          child: Card(
+                            child: ListTile(
+                              leading: Icon(
+                                Icons.timer,
+                                color: Color(0xFFE89696),
+                                size: 25,
+                              ),
+                              title: Text('10 minutes'),
+                              onTap: () async{
+                                //showNotification();
+                                await Future.delayed(Duration(seconds: 5));
+                                FlutterRingtonePlayer.playAlarm();
+                                print("5 seconds have passed");
+                                await Future.delayed(Duration(seconds: 5));
+                                FlutterRingtonePlayer.stop();
+                              },
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: 200,
+                          height: 50,
+                          child: Card(
+                            child: ListTile(
+                              leading: Icon(
+                                Icons.timer,
+                                color: Color(0xFFE89696),
+                                size: 25,
+                              ),
+                              title: Text('15 minutes'),
+                              onTap: () async{
+                                //showNotification();
+                                await Future.delayed(Duration(seconds: 5));
+                                FlutterRingtonePlayer.playAlarm();
+                                print("5 seconds have passed");
+                                await Future.delayed(Duration(seconds: 5));
+                                FlutterRingtonePlayer.stop();
+                              },
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: 200,
+                          height: 50,
+                          child: Card(
+                            child: ListTile(
+                              leading: Icon(
+                                Icons.timer,
+                                color: Color(0xFFE89696),
+                                size: 25,
+                              ),
+                              title: Text('30 minutes'),
+                              onTap: () async{
+                                //showNotification();
+                                await Future.delayed(Duration(seconds: 5));
+                                FlutterRingtonePlayer.playAlarm();
+                                print("5 seconds have passed");
+                                await Future.delayed(Duration(seconds: 5));
+                                FlutterRingtonePlayer.stop();
+                              },
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: 200,
+                          height: 50,
+                          child: Card(
+                            child: ListTile(
+                              leading: Icon(
+                                Icons.timer,
+                                color: Color(0xFFE89696),
+                                size: 25,
+                              ),
+                              title: Text('45 minutes'),
+                              onTap: () async{
+                                //showNotification();
+                                await Future.delayed(Duration(seconds: 5));
+                                FlutterRingtonePlayer.playAlarm();
+                                print("5 seconds have passed");
+                                await Future.delayed(Duration(seconds: 5));
+                                FlutterRingtonePlayer.stop();
+                              },
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: 200,
+                          height: 50,
+                          child: Card(
+                            child: ListTile(
+                              leading: Icon(
+                                Icons.timer,
+                                color: Color(0xFFE89696),
+                                size: 25,
+                              ),
+                              title: Text('1 hour'),
+                              onTap: () async{
+                                //showNotification();
+                                await Future.delayed(Duration(seconds: 5));
+                                FlutterRingtonePlayer.playAlarm();
+                                print("5 seconds have passed");
+                                await Future.delayed(Duration(seconds: 5));
+                                FlutterRingtonePlayer.stop();
+                              },
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                   RaisedButton(
                     onPressed: () async {
@@ -238,4 +500,17 @@ class _HomeTabState extends State<HomeTab> {
       )
     );
   }
+
+  showNotification() async {
+    var android = new AndroidNotificationDetails(
+        'channel id', 'channel NAME', 'CHANNEL DESCRIPTION',
+        priority: Priority.high,importance: Importance.max
+    );
+    var iOS = new IOSNotificationDetails();
+    var platform = new NotificationDetails();
+    await flutterLocalNotificationsPlugin.show(
+        0, 'New Video is out', 'Flutter Local Notification', platform,
+        payload: 'Nitish Kumar Singh is part time Youtuber');
+  }
+
 }

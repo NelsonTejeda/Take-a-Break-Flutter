@@ -228,12 +228,12 @@ class _ProfileTabState extends State<ProfileTab> {
               ),
               SizedBox(width: 20,),
               Text(
-                "Breaks",
+                "Break Score",
                 style: TextStyle(
                     color: Colors.grey
                 ),
               ),
-              SizedBox(width: 200,),
+              SizedBox(width: 150,),
               Text(
                 "#breaks",
                 style: TextStyle(
@@ -252,7 +252,7 @@ class _ProfileTabState extends State<ProfileTab> {
               ),
               SizedBox(width: 20,),
               Text(
-                "Longest Break",
+                "Recent Break",
                 style: TextStyle(
                     color: Colors.grey
                 ),
