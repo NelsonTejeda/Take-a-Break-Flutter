@@ -113,7 +113,8 @@ class SignInPage extends StatelessWidget {
                     'score' : "0",
                     'friends' : {
                       'counter' : "0"
-                    }
+                    },
+                    "lastBreak" : ""
                   });
                 },
                 child: Text("Sign Up"),

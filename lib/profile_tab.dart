@@ -24,6 +24,25 @@ class _ProfileTabState extends State<ProfileTab> {
   List<Widget> listTemp;
   Future<List<Widget>>listOfFriendWidget;
   String imageUrl;
+  Future<String> score;
+  Future<String> lastBreak;
+
+
+  Future<String> getLastBreak() async{
+    var temp;
+    await databaseReference.child("${Globals.uid}/lastBreak").once().then((DataSnapshot data) async{
+      temp = data.value;
+    });
+    return temp;
+  }
+
+  Future<String> getScore() async {
+    var temp;
+    await databaseReference.child("${Globals.uid}/score").once().then((DataSnapshot data) async{
+      temp = data.value;
+    });
+    return temp;
+  }
 
 
   Future<String> _getImage(String image) async {
@@ -86,6 +105,8 @@ class _ProfileTabState extends State<ProfileTab> {
   void initState() {
     super.initState();
     listOfFriendWidget = getFriends();
+    score = getScore();
+    lastBreak = getLastBreak();
   }
 
 
@@ -234,11 +255,18 @@ class _ProfileTabState extends State<ProfileTab> {
                 ),
               ),
               SizedBox(width: 150,),
-              Text(
-                "#breaks",
-                style: TextStyle(
-                  fontWeight: FontWeight.w800,
-                ),
+              FutureBuilder<String>(
+                future: score,
+                builder: (context, snapshot){
+                  return snapshot.hasData ?
+                  Text(
+                    snapshot.data,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ) :
+                  CircularProgressIndicator();
+                },
               ),
             ],
           ),
@@ -257,12 +285,19 @@ class _ProfileTabState extends State<ProfileTab> {
                     color: Colors.grey
                 ),
               ),
-              SizedBox(width: 155,),
-              Text(
-                "#time",
-                style: TextStyle(
-                  fontWeight: FontWeight.w800,
-                ),
+              SizedBox(width: 120,),
+              FutureBuilder<String>(
+                future: lastBreak,
+                builder: (context, snapshot){
+                  return snapshot.hasData ?
+                  Text(
+                    snapshot.data,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ) :
+                  CircularProgressIndicator();
+                },
               ),
             ],
           ),

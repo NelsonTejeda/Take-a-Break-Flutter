@@ -320,6 +320,13 @@ class _HomeTabState extends State<HomeTab> {
                               onTap: () async{
                                 //showNotification();
                                 await Future.delayed(Duration(seconds: 5));
+                                await databaseReference.child("${Globals.uid}").once().then((DataSnapshot data) async {
+                                  await databaseReference.child(Globals.uid).update({
+                                    "score" : "${int.parse(data.value["score"]) + 1}",
+                                    "lastBreak" : "5 Second Break"
+                                  });
+                                });
+
                                 FlutterRingtonePlayer.playAlarm();
                                 print("5 seconds have passed");
                                 await Future.delayed(Duration(seconds: 5));
