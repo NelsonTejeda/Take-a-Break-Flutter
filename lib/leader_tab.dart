@@ -30,7 +30,17 @@ class _LeaderBoardState extends State<LeaderBoard> {
   Widget getTextWidgets(Map<dynamic, dynamic> users)
   {
     List<Widget> list = new List<Widget>();
-    list.add(new SizedBox(width: 200,height: 50,));
+    list.add(
+      new Text(
+        "Leaderboard ",
+        style: TextStyle(
+            fontWeight: FontWeight.w800,
+            fontSize: 30,
+            color: Color(0xFFE89696)
+        ),
+      )
+    );
+    list.add(new SizedBox(width: 200,height: 10,));
 
     users.forEach((key, value) {
       list.add(new Container(
@@ -64,7 +74,6 @@ class _LeaderBoardState extends State<LeaderBoard> {
                       FutureBuilder<String>(
                         future: getImage(key.toString()),
                         builder: (context, snapshot){
-                          print("NOTICE ME BOII ${key.toString()}");
                           return snapshot.hasData ? CircleAvatar(backgroundImage: NetworkImage(snapshot.data), radius: 25.0) : CircularProgressIndicator();
                         },
                       ),
@@ -76,13 +85,14 @@ class _LeaderBoardState extends State<LeaderBoard> {
                         ),
                       ),
                       subtitle: Text(
-                        "Current Score: ${value["score"]}",
+                        "Current Score: ${value["score"]} \nLast Break: ${value["lastBreak"]}",
                         style: TextStyle(
                             fontWeight: FontWeight.w800,
                             fontSize: 20,
                             //color: Color(0xFFE89696)
                         ),
                       ),
+                      isThreeLine: true,
                     ),
                   ]
               )

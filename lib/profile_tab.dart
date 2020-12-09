@@ -206,9 +206,11 @@ class _ProfileTabState extends State<ProfileTab> {
                                                 print("user does not exist");
                                               }
                                               else{
-                                                setState(() {
-                                                  listOfFriendWidget = getFriends();
-                                                });
+                                                if(mounted){
+                                                  setState(() {
+                                                    listOfFriendWidget = getFriends();
+                                                  });
+                                                }
                                                 userExist = false;
                                               }
                                             });
