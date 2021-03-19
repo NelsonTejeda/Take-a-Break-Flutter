@@ -1,6 +1,6 @@
 # take_a_break
 
-A new Flutter application.
+*Full video demo:* https://github.com/NelsonTejeda/Take-a-Break-Flutter/blob/master/21-03-19-14-13-42.mp4
 
 ## Getting Started
 
